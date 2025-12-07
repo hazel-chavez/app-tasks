@@ -7,15 +7,22 @@
   margin: 0 auto;
   padding: 1rem;
   font-weight: normal;
-  background-color: var(--bg-color-body);
+  background: var(--bg-color-body);
 }
 
 
 :root{
-  --bg-color-body: #EEF7FF;
+  --bg-color-body: #5b22b3;
+  --bg-container:#6f3dc1;
   --bg-card: #ecf1f0;
   --bg-btn: #EEF5FF;
   --bg-cardTasks: #E1F7F5;
   --color-placeholder: #3887BE;
+  --bg-color-logo: #dfd5fe;
+  --text-color: #ffffff;
+  --text-color-secondary: #5400ff
+  --add-btn-bg: linear-gradient(45deg, #a100ff, #5400ff); /* Degradado llamativo */
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --btn-add: linear-gradient(135deg, rgb(168, 85, 247) 0%, rgb(124, 58, 237) 100%);;
 }
 

@@ -1,196 +1,312 @@
 
 <template>
   <div class="container p-5">
-  <header>
-    <div class="container-header">
-      <nav class="navbar row">
-        <div class="container">
-          <span class="navbar-brand mb-0 h1">
-            <img
-              alt="logo"
-              class="logo"
-              src="@/assets/Logo-app.png"
-             width="105" height="100"
-            />
-          </span>
-        </div>
-        <div class="row d-flex justify-content-center container-input">
-          <div class="col-lg-6 offset-1g-2 mb-2">
-            <input
-              type="text"
-              class="form-control form-control-lg"
-              placeholder="Ingresar Tarea"
-               v-model="nameTasks"
-
-            />
-          <div class="container-button col d-flex justify-content-center pt-3">
-            <button type="button" class="btn btn-outline  justify-content-center text-center"
-            v-on:click="addTasks()">Agregar Tarea<img src="@/assets/boton-agregar.png"></button>
-            <!-- metodo agregue las tareas -->
+    <header>
+      <div class="container-header">
+        <span class="navbar-brand mb-0 h1">
+          <h1>
+            TaskHub<img alt="logo" class="logo" src="@/assets/icons8-lista.png" />
+          </h1>
+        </span>
+        <p>Gestiona tus Tareas de forma Rapida</p>
+        <div class="row justify-content-center mb-5 align-items-center">
+          <div class="col-12">
+            <div class="d-flex flex-wrap justify-content-around stats-bar rounded-4">
+              <!-- Estadísticas de tareas -->
+              <div class="text-center container-item rounded-4">
+                <p class="mb-0 text-white-50">Total</p>
+                <h3 class="text-white">{{ tasks.length }}</h3>
+              </div>
+              <div class="text-center container-item rounded-4">
+                <p class="mb-0 text-white-50">Pendientes</p>
+                <h3 class="text-white">
+                  {{ tasks.filter((t) => t.status === false).length }}
+                </h3>
+              </div>
+              <div class="text-center container-item rounded-4">
+                <p class="mb-0 text-white-50">Completadas</p>
+                <h3 class="text-white">
+                  {{ tasks.filter((t) => t.status === true).length }}
+                </h3>
+              </div>
+            </div>
           </div>
-
-          </div>
         </div>
-      </nav>
-    </div>
-  </header>
-
-  <div class="container row pt-5 ">
-
-
-    <div class="col-lg offset offset-lg container-tasks p-5 border  p-2 mb-2 border-opacity-50 rounded-4">
-      <!-- condicion para que quite las tareas -->
-    <div class="dropdown mb-3">
-  <button class="btn btn-secondary dropdown-toggle"    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-  Filtrar Tareas ({{ selected }})
-  <!-- aparecera lo que seleccione el usuario -->
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#" @click.prevent="filterUpdates('Todas')">Todas</a></li>
-    <li><a class="dropdown-item" href="#" @click.prevent="filterUpdates('Pendientes')">Pendientes</a></li>
-    <li><a class="dropdown-item" href="#" @click.prevent="filterUpdates('Completadas')">Completadas</a></li>
-  </ul>
-</div>
-      <div class="card p-2" v-if="filteredTasks.length === 0">
-        <h6>No hay ninguna tarea</h6>
       </div>
+    </header>
+
+    <div class="container">
+      <div class="row justify-content-center container-input mb-4 p-5">
+        <div class="col-12 col-md-8 d-flex justify-content-center align-items-center">
+          <!-- Input para agregar tarea -->
+          <input
+            type="text"
+            class="form-control task-input me-2"
+            placeholder="Agregar nueva tarea..."
+            v-model="nameTasks"
+            @keyup.enter="addTasks()"
+          />
+          <button type="button" class="btn d-flex align-items-center" v-on:click="addTasks()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
+              class="icon icon-tabler icons-tabler-filled icon-tabler-copy-plus">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M18.333 6a3.667 3.667 0 0 1 3.667 3.667v8.666a3.667 3.667 0 0 1 -3.667 3.667h-8.666a3.667 3.667 0 0 1 -3.667 -3.667v-8.666a3.667 3.667 0 0 1 3.667 -3.667zm-4.333 4a1 1 0 0 0 -1 1v2h-2a1 1 0 0 0 -.993 .883l-.007 .117a1 1 0 0 0 1 1h2v2a1 1 0 0 0 .883 .993l.117 .007a1 1 0 0 0 1 -1v-2h2a1 1 0 0 0 .993 -.883l.007 -.117a1 1 0 0 0 -1 -1h-2v-2a1 1 0 0 0 -.883 -.993zm1 -8c1.094 0 1.828 .533 2.374 1.514a1 1 0 1 1 -1.748 .972c-.221 -.398 -.342 -.486 -.626 -.486h-10c-.548 0 -1 .452 -1 1v9.998c0 .32 .154 .618 .407 .805l.1 .065a1 1 0 1 1 -.99 1.738a3 3 0 0 1 -1.517 -2.606v-10c0 -1.652 1.348 -3 3 -3z" />
+            </svg>
+            Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row container-list align-items-center justify-content-center">
+      <div class="btn-dropdown col col-md-3" :class="{ active: selected === 'Todas' }">
+        <button @click="filterUpdates('Todas')">Todas</button>
+      </div>
+      <div class="btn-dropdown col  col-md-3" :class="{ active: selected === 'Pendientes' }">
+        <button @click="filterUpdates('Pendientes')">Pendientes</button>
+      </div>
+      <div class="btn-dropdown col  col-md-3" :class="{ active: selected === 'Completadas' }">
+        <button @click="filterUpdates('Completadas')">Completadas</button>
+      </div>
+    </div>
+
+    <!-- Lista de tareas -->
+    <div class="container-tasks col-lg p-5 border p-2 mb-2 border-opacity-50 rounded-4">
+      <div class="card p-2 d-flex justify-content-center flex-column align-items-center" v-if="filteredTasks.length === 0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-plus">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M12.5 21h-6.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v5" />
+          <path d="M16 3v4" />
+          <path d="M8 3v4" />
+          <path d="M4 11h16" />
+          <path d="M16 19h6" />
+          <path d="M19 16v6" />
+        </svg>
+        <h6>No hay ninguna tarea</h6>
+        <p>!Agregar una tarea para iniciar!</p>
+      </div>
+
       <ul class="list-group" v-for="(taskList, i) in filteredTasks" v-bind:key="i">
-        <!-- imprimimos las cards con las tareas  -->
         <li class="list-group-item d-flex justify-content-between">
-          <span
-            v-on:click="updateTasks(taskList, i)"
-            v-bind:class="[
-              taskList.status === true ? 'bg-sucess' : '',
-              'cursor',
-            ]"
-          >
-            <i
-              style="color: #3887BE"
-              v-bind:class="[
-                taskList.status === true
-                  ? 'fa fa-square-check'
-                  : 'fas fa-square',
-              ]"
-            ></i>
-            <!-- array para que cambie el estado de actualizacion de la tarea -->
+          <!-- Cambiar estado de la tarea -->
+          <span v-on:click="updateTasks(taskList, i)" :class="[taskList.status ? 'bg-sucess' : '', 'cursor']">
+            <i style="color: #5400ff" :class="taskList.status ? 'fa fa-square-check' : 'fas fa-square'"></i>
           </span>
-          <!-- agregar el nombre de la tareas -->
-          <h6>   {{ taskList.name }}</h6>
-          <!-- llamamos al metodo y le pasamos como parametro el valor de i para saber que tarea eliminar -->
+          <!-- Nombre de la tarea -->
+          <h6>{{ taskList.name }}</h6>
+          <!-- Eliminar tarea -->
           <span v-on:click="deleteTasks(i)">
-            <i class="fas fa-trash-alt" style="color: #3887BE"></i>
+            <i class="fas fa-trash-alt" style="color: #5b22b3"></i>
           </span>
         </li>
       </ul>
     </div>
+
+    
   </div>
-</div>
+  <footer>
+      <p class="text-copy text-center mt-5">&copy; 2025 TaskHub. Hazel Chavez Alvarado.</p>
+    </footer>
 </template>
+
 <script>
 export default {
   data() {
     return {
-      tasks: [], //array donde se iran almacenando las tareas
-      nameTasks: "",
-      selected: 'Todas', // option sera seleccionado como valor inicial
-    }
+      tasks: [], // Array donde se irán almacenando las tareas
+      nameTasks: "", // Nombre de la tarea nueva
+      selected: "Todas", // Filtro seleccionado inicialmente
+    };
   },
-  // establecer comparaciones y lógica elaborada que se reevalúa cada vez que uno de sus valores a comprobar cambia, asegurando su reactividad
   computed: {
     filteredTasks() {
-      if (this.selected === 'Todas') {//segun lo que seleccion el usuario se filtre con su estado
-       // Mostrar todas las tareas
-        return this.tasks;
-      } else if (this.selected === 'Completadas') {
-          // Mostrar solo tareas completadas
-        return this.tasks.filter(task => task.status === true);//completadas
-      } else if (this.selected === 'Pendientes') {
-        // Mostrar solo tareas pendientes
-        return this.tasks.filter(task => task.status === false);//pendientes
+      // Filtra las tareas según el estado seleccionado
+      if (this.selected === "Todas") {
+        return this.tasks; // Mostrar todas
+      } else if (this.selected === "Completadas") {
+        return this.tasks.filter((task) => task.status === true);
+      } else if (this.selected === "Pendientes") {
+        return this.tasks.filter((task) => task.status === false);
       }
       return this.tasks;
     },
   },
   methods: {
     addTasks() {
-      // Crear el objeto de la tarea
-      const taskList = {
-        name: this.nameTasks, // Nombre de la tarea
-        status: false, // Estado inicial de la tarea (incompleta)
-      };
-
-      // Agregar el objeto taskList al array tasks
+      // Crear y agregar tarea
+      const taskList = { name: this.nameTasks, status: false };
       this.tasks.push(taskList);
-
-      // Limpiar las tareas
-      this.nameTasks = "";
-
+      this.nameTasks = ""; // Limpiar input
       console.log(this.tasks);
     },
     deleteTasks(i) {
-      this.tasks.splice(i, 1); //i es la posicion del elemento y se eliminara solo 1
+      // Eliminar tarea por índice
+      this.tasks.splice(i, 1);
     },
     updateTasks(taskList, i) {
-      this.tasks[i].status = !taskList.status;//invertir el estado de la tarea
+      // Cambiar estado de la tarea
+      this.tasks[i].status = !taskList.status;
     },
-    //Cambiar el filtro seleccionado.
-    filterUpdates(status){
+    filterUpdates(status) {
+      // Cambiar filtro seleccionado
       this.selected = status;
-
-    }
+    },
   },
 };
 </script>
+
 <style scoped>
-.container.p-5{
-background-color:#f3faf8;
--webkit-box-shadow: 4px 9px 81px -1px rgba(0,0,0,0.75);
--moz-box-shadow: 4px 9px 81px -1px rgba(0,0,0,0.75);
-box-shadow: 4px 9px 81px -1px rgba(0,0,0,0.75);
+/* Encabezado */
+.container-header h1 {
+  font-family: Segoe UI Emoji;
+  text-align: center;
+  color: var(--bg-color-logo);
+  font-weight: 700;
+}
+.container-header p {
+  text-align: center;
+  color: #9275f6;
+  font-weight: 600;
+  font-size: clamp(14px, 1vw, 18px);
 }
 
-.navbar {
-  display: flex;
-  background-image: url(@/assets/imgHeader.jpg);
-  border-radius: 15px;
-
+/* Estadísticas de tareas */
+.container-item {
+  width: 25%;
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  text-align: center;
 }
-input.form-control.form-control-lg{
-  background-color: var(--bg-btn);
+
+/* Input para agregar tareas */
+.container-input {
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+input.form-control {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  transition: all 0.3s;
+}
+input.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 10px var(--bg-color-logo);
+  border: 1px solid var(--bg-color-logo);
 }
 ::placeholder {
-  color: rgb(180, 178, 178);
   font-family: "Ubuntu", sans-serif;
+  color: rgb(233, 213, 255);
+  opacity: 0.5;
 }
-.container-card{
-  background-color: var(--bg-card);
-  height: 35vw;
-}
-div.card{
-  background-color: var(--bg-btn);
-}
-li.list-group-item.d-flex.justify-content-between {
-  background-color: var(--bg-cardTasks);
-}
-.btn {
-  background-color:#24c5b0;
+
+/* Botones */
+button.btn{
+  background: var(--btn-add);
   font-family: "Funnel Sans", sans-serif;
-  color: #F5F7F8;
+  color: #f5f7f8;
+  padding: 0.8rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 15px -3px rgb(168 85 247 / 0.5),
+    0 4px 6px -4px rgb(168 85 247 / 0.5);
+  transition: all 0.3s;
 }
-.btn:hover{
-  color:#87CEEB;
+button.btn:hover {
+  background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgb(147 51 234 / 0.6),
+              0 10px 10px -5px rgb(147 51 234 / 0.4);
 }
-.container-tasks{
-  background-color: var(--bg-card);
-
-  height: 50vw;
-
+button.btn svg {
+  margin-right: 0.5rem;
 }
-h6 {
-  color: var(--color-placeholder);
+.btn:hover {
+  opacity: 0.9;
+}
 
+/* Lista de tareas */
+.container-tasks {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 1rem;
+}
+.card.p-2 {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 15px;
+  height: 150px;
+}
+.card svg {
+  color: var(--text-color);
+}
+.card h6 {
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: clamp(14px, 2.5vw, 18px);
+}
+.card p {
+  color: rgb(233, 213, 255);
+  font-size: clamp(12px, 2vw, 18px);
+  opacity: 0.5;
 }
 span i {
   cursor: pointer;
 }
+
+/* Dropdown de filtros */
+.container-list {
+  margin-top: 4rem;
+}
+.btn-dropdown {
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  text-align: center;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.btn-dropdown button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-dropdown.active {
+  background: var(--bg-color-logo);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.btn-dropdown.active button {
+  color: var(--text-color-secondary);
+}
+
+/* Footer */
+.text-copy {
+  color: rgb(233, 213, 255);
+  font-size: 16px;
+  font-weight: 500;
+}
 </style>
+
