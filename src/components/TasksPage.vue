@@ -1,37 +1,37 @@
-
 <template>
   <div class="container p-5">
     <header>
       <div class="container-header">
         <span class="navbar-brand mb-0 h1">
           <h1>
-            TaskHub<img alt="logo" class="logo" src="@/assets/icons8-lista.png" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-list-details">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M13 5h8" />
+              <path d="M13 9h5" />
+              <path d="M13 15h8" />
+              <path d="M13 19h5" />
+              <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+              <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+            </svg>TaskHub
           </h1>
         </span>
-        <p>Gestiona tus Tareas de forma Rapida</p>
+        <p class="subtitle">Gestiona tus Tareas de forma Rapida</p>
         <div class="row justify-content-center mb-5 align-items-center">
           <div class="col-12">
             <div class="d-flex flex-wrap justify-content-around stats-bar rounded-4">
-              <!-- Estadísticas de tareas -->
-              <div class="text-center container-item rounded-4">
-                <p class="mb-0 text-white-50">Total</p>
-                <h3 class="text-white">{{ tasks.length }}</h3>
-              </div>
-              <div class="text-center container-item rounded-4">
-                <p class="mb-0 text-white-50">Pendientes</p>
+              <!-- Estadísticas de tareas dinámicas -->
+              <div v-for="(count, category) in taskCounts" :key="category" class="text-center container-item rounded-4">
+                <p class="mb-0 text-white-50">{{ category }}</p>
                 <h3 class="text-white">
-                  {{ tasks.filter((t) => t.status === false).length }}
-                </h3>
-              </div>
-              <div class="text-center container-item rounded-4">
-                <p class="mb-0 text-white-50">Completadas</p>
-                <h3 class="text-white">
-                  {{ tasks.filter((t) => t.status === true).length }}
+                  <AnimatedCounter :number="count" />
                 </h3>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </header>
 
@@ -39,13 +39,8 @@
       <div class="row justify-content-center container-input mb-4 p-5">
         <div class="col-12 col-md-8 d-flex justify-content-center align-items-center">
           <!-- Input para agregar tarea -->
-          <input
-            type="text"
-            class="form-control task-input me-2"
-            placeholder="Agregar nueva tarea..."
-            v-model="nameTasks"
-            @keyup.enter="addTasks()"
-          />
+          <input type="text" class="form-control task-input me-2" placeholder="Agregar nueva tarea..."
+            v-model="nameTasks" @keyup.enter="addTasks()" />
           <button type="button" class="btn d-flex align-items-center" v-on:click="addTasks()">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
               class="icon icon-tabler icons-tabler-filled icon-tabler-copy-plus">
@@ -73,11 +68,13 @@
     </div>
 
     <!-- Lista de tareas -->
-    <div class="container-tasks col-lg p-5 border p-2 mb-2 border-opacity-50 rounded-4">
-      <div class="card p-2 d-flex justify-content-center flex-column align-items-center" v-if="filteredTasks.length === 0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-plus">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <div class="container-tasks col-lg p-5 border p-2 mb-2 border-opacity-50 rounded-4 ">
+      <div class="card p-2 mt-3 d-flex justify-content-center flex-column align-items-center"
+        v-if="filteredTasks.length === 0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-plus">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
           <path d="M12.5 21h-6.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v5" />
           <path d="M16 3v4" />
           <path d="M8 3v4" />
@@ -105,15 +102,19 @@
       </ul>
     </div>
 
-    
+
   </div>
   <footer>
-      <p class="text-copy text-center mt-5">&copy; 2025 TaskHub. Hazel Chavez Alvarado.</p>
-    </footer>
+    <p class="text-copy text-center mt-5">&copy; 2025 TaskHub. Hazel Chavez Alvarado.</p>
+  </footer>
 </template>
 
 <script>
+import AnimatedCounter from './AnimatedCounter.vue';
 export default {
+  components: {
+    AnimatedCounter
+  },
   data() {
     return {
       tasks: [], // Array donde se irán almacenando las tareas
@@ -122,13 +123,28 @@ export default {
     };
   },
   computed: {
+
+    taskCounts() {
+      //crear un objeto vacio para almacenar los conteos
+      const counts = {};
+      // Calcular los conteos de tareas
+      counts.Todas = this.tasks.length;
+      // Filtrar tareas pendientes y completadas
+      counts.Pendientes = this.tasks.filter(task => !task.status).length;
+      counts.Completadas = this.tasks.filter(task => task.status).length;
+      //º Devolver el objeto con los conteos
+      return counts;
+    },
     filteredTasks() {
       // Filtra las tareas según el estado seleccionado
-      if (this.selected === "Todas") {
+      if (this.selected === "Todas")
+      {
         return this.tasks; // Mostrar todas
-      } else if (this.selected === "Completadas") {
+      } else if (this.selected === "Completadas")
+      {
         return this.tasks.filter((task) => task.status === true);
-      } else if (this.selected === "Pendientes") {
+      } else if (this.selected === "Pendientes")
+      {
         return this.tasks.filter((task) => task.status === false);
       }
       return this.tasks;
@@ -161,16 +177,33 @@ export default {
 <style scoped>
 /* Encabezado */
 .container-header h1 {
-  font-family: Segoe UI Emoji;
+  font-family: var(--font-logo);
   text-align: center;
   color: var(--bg-color-logo);
-  font-weight: 700;
+  font-weight: bold;
+  font-size: 3rem;
+
 }
+
+.container-header .subtitle {
+  font-size: clamp(18px, 1vw, 18px);
+  font-family: var(--font-general);
+}
+
 .container-header p {
   text-align: center;
   color: #9275f6;
   font-weight: 600;
   font-size: clamp(14px, 1vw, 18px);
+  font-family: var(--font-general);
+
+}
+
+.container-item h3 {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: bold;
+  font-family: var(--font-general);
+
 }
 
 /* Estadísticas de tareas */
@@ -183,6 +216,8 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1rem;
   text-align: center;
+  font-family: var(--font-general);
+
 }
 
 /* Input para agregar tareas */
@@ -192,7 +227,10 @@ export default {
   -webkit-backdrop-filter: blur(15px);
   border-radius: 25px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: var(--font-general);
+
 }
+
 input.form-control {
   background-color: var(--card-bg);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -200,20 +238,25 @@ input.form-control {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   transition: all 0.3s;
+  font-family: var(--font-general);
+
 }
+
 input.form-control:focus {
   outline: none;
   box-shadow: 0 0 10px var(--bg-color-logo);
   border: 1px solid var(--bg-color-logo);
 }
+
 ::placeholder {
   font-family: "Ubuntu", sans-serif;
   color: rgb(233, 213, 255);
   opacity: 0.5;
+  font-size: clamp(14px, 2vw, 18px);
 }
 
 /* Botones */
-button.btn{
+button.btn {
   background: var(--btn-add);
   font-family: "Funnel Sans", sans-serif;
   color: #f5f7f8;
@@ -222,29 +265,39 @@ button.btn{
   box-shadow: 0 10px 15px -3px rgb(168 85 247 / 0.5),
     0 4px 6px -4px rgb(168 85 247 / 0.5);
   transition: all 0.3s;
+  font-family: var(--font-general);
+
 }
+
 button.btn:hover {
-  background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+  background: var(--btn-add-hover);
   transform: translateY(-2px);
   box-shadow: 0 20px 25px -5px rgb(147 51 234 / 0.6),
-              0 10px 10px -5px rgb(147 51 234 / 0.4);
+    0 10px 10px -5px rgb(147 51 234 / 0.4);
 }
+
 button.btn svg {
   margin-right: 0.5rem;
 }
+
 .btn:hover {
   opacity: 0.9;
 }
 
 /* Lista de tareas */
 .container-tasks {
+  min-height: 300px;
   background-color: var(--card-bg);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border-radius: 25px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   margin-top: 1rem;
+  font-family: var(--font-general);
+
+
 }
+
 .card.p-2 {
   background-color: var(--card-bg);
   backdrop-filter: blur(15px);
@@ -252,19 +305,24 @@ button.btn svg {
   border-radius: 15px;
   height: 150px;
 }
+
 .card svg {
   color: var(--text-color);
+
 }
+
 .card h6 {
   color: var(--text-color);
   font-weight: 600;
   font-size: clamp(14px, 2.5vw, 18px);
 }
+
 .card p {
   color: rgb(233, 213, 255);
   font-size: clamp(12px, 2vw, 18px);
   opacity: 0.5;
 }
+
 span i {
   cursor: pointer;
 }
@@ -272,7 +330,10 @@ span i {
 /* Dropdown de filtros */
 .container-list {
   margin-top: 4rem;
+  font-family: var(--font-general);
+
 }
+
 .btn-dropdown {
   background: var(--card-bg);
   backdrop-filter: blur(15px);
@@ -286,6 +347,7 @@ span i {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 .btn-dropdown button {
   background: none;
   border: none;
@@ -294,12 +356,25 @@ span i {
   font-weight: 600;
   cursor: pointer;
 }
+
 .btn-dropdown.active {
   background: var(--bg-color-logo);
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
+
 .btn-dropdown.active button {
   color: var(--text-color-secondary);
+}
+
+ul.list-group li.list-group-item {
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: clamp(14px, 2.5vw, 18px);
 }
 
 /* Footer */
@@ -307,6 +382,6 @@ span i {
   color: rgb(233, 213, 255);
   font-size: 16px;
   font-weight: 500;
+  font-family: var(--font-general);
 }
 </style>
-
