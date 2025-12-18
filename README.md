@@ -1,35 +1,21 @@
-# practica 2 hazel chavez
 
-This template should help get you started developing with Vue 3 in Vite.
+# App de Tareas
 
-## Recommended IDE Setup
+Este proyecto permite agregar y organizar tareas, así como llevar estadísticas de cuántas se encuentran pendientes, completadas y el total.  
+Las tareas pueden filtrarse, eliminarse y marcarse como pendientes o completadas.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Es una aplicación pensada para practicar lógica, manejo de estados y organización de información.
 
-## Customize configuration
+## Tecnologías
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- HTML  
+- CSS  
+- Node.js
+- JavaScript
+- Vue
+-CountJs
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## Qué aprendí
+- A organizar y gestionar tareas, diferenciando entre pendientes y completadas.
+- A aplicar lógica para filtrar información y actualizar el estado de las tareas.
+- A estructurar mejor un proyecto utilizando componentes y documentarlo de forma clara mediante un README.
