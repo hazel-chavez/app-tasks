@@ -157,13 +157,13 @@
       <ul class="list-group" v-for="(taskList, i) in filteredTasks" v-bind:key="i">
         <li class="list-group-item d-flex justify-content-between">
           <!-- Cambiar estado de la tarea -->
-          <span v-on:click="updateTasks(taskList, i)" :class="[taskList.status ? 'bg-sucess' : '', 'cursor']">
+          <span v-on:click="updateTasks(taskList)" :class="[taskList.status ? 'bg-sucess' : '', 'cursor']">
             <i style="color: #5400ff" :class="taskList.status ? 'fa fa-square-check' : 'fas fa-square'"></i>
           </span>
           <!-- Nombre de la tarea -->
           <h6>{{ taskList.name }}</h6>
           <!-- Eliminar tarea -->
-          <span v-on:click="deleteTasks(i)">
+          <span v-on:click="deleteTasks(taskList)">
             <i class="fas fa-trash-alt" style="color: #5b22b3"></i>
           </span>
         </li>
@@ -233,14 +233,18 @@ export default {
       this.nameTasks = ""; // Limpiar input
       console.log(this.tasks);
     },
-    deleteTasks(i) {
-      // Eliminar tarea por índice
-      this.tasks.splice(i, 1);
-    },
-    updateTasks(taskList, i) {
-      // Cambiar estado de la tarea
-      this.tasks[i].status = !taskList.status;
-    },
+      deleteTasks(taskList) {
+        const taskIndex = this.tasks.indexOf(taskList);
+        if (taskIndex !== -1) {
+          this.tasks.splice(taskIndex, 1);
+        }
+      },
+      updateTasks(taskList) {
+        const taskIndex = this.tasks.indexOf(taskList);
+        if (taskIndex !== -1) {
+          this.tasks[taskIndex].status = !taskList.status;
+        }
+      },
     filterUpdates(status) {
       // Cambiar filtro seleccionado
       this.selected = status;
