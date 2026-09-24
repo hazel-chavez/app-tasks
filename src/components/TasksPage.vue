@@ -154,37 +154,27 @@
 				<p>!Agregar una tarea para iniciar!</p>
 			</div>
 
-			<ul
-				class="list-group"
-				v-for="(taskList, i) in filteredTasks"
-				v-bind:key="i"
-			>
-				<li class="list-group-item d-flex justify-content-between">
-					<span
-						v-on:click="updateTasks(taskList, i)"
-						:class="[taskList.status ? 'bg-sucess' : '', 'cursor']"
-					>
-						<i
-							style="color: #5400ff"
-							:class="taskList.status ? 'fa fa-square-check' : 'fas fa-square'"
-						></i>
-					</span>
-					<h6>{{ taskList.name }}</h6>
-					<span v-on:click="deleteTasks(i)">
-						<i
-							class="fas fa-trash-alt"
-							style="color: #5b22b3"
-						></i>
-					</span>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<footer>
-		<p class="text-copy text-center mt-5">
-			&copy; 2026 TaskHub. Hazel Chavez Alvarado.
-		</p>
-	</footer>
+      <ul class="list-group" v-for="(taskList, i) in filteredTasks" v-bind:key="i">
+        <li class="list-group-item d-flex justify-content-between">
+          <!-- Cambiar estado de la tarea -->
+          <span v-on:click="updateTasks(taskList, i)" :class="[taskList.status ? 'bg-sucess' : '', 'cursor']">
+            <i style="color: #5400ff" :class="taskList.status ? 'fa fa-square-check' : 'fas fa-square'"></i>
+          </span>
+          <!-- Nombre de la tarea -->
+          <h6>{{ taskList.name }}</h6>
+          <!-- Eliminar tarea -->
+          <span v-on:click="deleteTasks(i)">
+            <i class="fas fa-trash-alt" style="color: #5b22b3"></i>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+
+  </div>
+  <footer>
+    <p class="text-copy text-center mt-5">&copy; 2025 TaskHub. Hazel Chavez Alvarado.</p>
+  </footer>
 </template>
 
 <script>
@@ -197,88 +187,65 @@ import AnimatedCounter from './AnimatedCounter.vue';
  */
 
 export default {
-	components: {
-		AnimatedCounter,
-	},
-	/**
-	 * Estado local del módulo de tareas.
-	 * @returns {{ tasks: Task[], nameTasks: string, selected: 'Todas' | 'Pendientes' | 'Completadas' }}
-	 */
-	data() {
-		return {
-			/** @type {Task[]} */
-			tasks: [],
-			nameTasks: '',
-			selected: 'Todas',
-		};
-	},
-	computed: {
-		/**
-		 * Resumen de tareas por categoría para la barra de estadísticas.
-		 * @returns {{ Todas: number, Pendientes: number, Completadas: number }}
-		 */
-		taskCounts() {
-			const counts = {};
-			counts.Todas = this.tasks.length;
-			counts.Pendientes = this.tasks.filter((task) => !task.status).length;
-			counts.Completadas = this.tasks.filter((task) => task.status).length;
-			return counts;
-		},
-		/**
-		 * Devuelve la lista de tareas según el filtro seleccionado.
-		 * @returns {Task[]}
-		 */
-		filteredTasks() {
-			if (this.selected === 'Todas') {
-				return this.tasks;
-			} else if (this.selected === 'Completadas') {
-				return this.tasks.filter((task) => task.status === true);
-			} else if (this.selected === 'Pendientes') {
-				return this.tasks.filter((task) => task.status === false);
-			}
-			return this.tasks;
-		},
-	},
-	methods: {
-		/**
-		 * Agrega una nueva tarea en estado pendiente.
-		 * Si el campo está vacío o solo contiene espacios, no agrega nada.
-		 * @returns {void}
-		 */
-		addTasks() {
-			if (!this.nameTasks || !this.nameTasks.trim()) {
-				return;
-			}
-			const taskList = { name: this.nameTasks.trim(), status: false };
-			this.tasks.push(taskList);
-			this.nameTasks = '';
-		},
-		/**
-		 * Elimina una tarea por índice.
-		 * @param {number} i Índice de la tarea.
-		 * @returns {void}
-		 */
-		deleteTasks(i) {
-			this.tasks.splice(i, 1);
-		},
-		/**
-		 * Cambia el estado de una tarea (pendiente/completada).
-		 * @param {Task} taskList Tarea actual.
-		 * @param {number} i Índice de la tarea en la lista.
-		 * @returns {void}
-		 */
-		updateTasks(taskList, i) {
-			this.tasks[i].status = !taskList.status;
-		},
-		/**
-		 * Actualiza el filtro activo para la vista de tareas.
-		 * @param {'Todas' | 'Pendientes' | 'Completadas'} status Estado de filtro seleccionado.
-		 * @returns {void}
-		 */
-		filterUpdates(status) {
-			this.selected = status;
-		},
-	},
+  components: {
+    AnimatedCounter
+  },
+  data() {
+    return {
+      tasks: [], // Array donde se irán almacenando las tareas
+      nameTasks: "", // Nombre de la tarea nueva
+      selected: "Todas", // Filtro seleccionado inicialmente
+    };
+  },
+  computed: {
+
+    taskCounts() {
+      //crear un objeto vacio para almacenar los conteos
+      const counts = {};
+      // Calcular los conteos de tareas
+      counts.Todas = this.tasks.length;
+      // Filtrar tareas pendientes y completadas
+      counts.Pendientes = this.tasks.filter(task => !task.status).length;
+      counts.Completadas = this.tasks.filter(task => task.status).length;
+      //º Devolver el objeto con los conteos
+      return counts;
+    },
+    filteredTasks() {
+      // Filtra las tareas según el estado seleccionado
+      if (this.selected === "Todas")
+      {
+        return this.tasks; // Mostrar todas
+      } else if (this.selected === "Completadas")
+      {
+        return this.tasks.filter((task) => task.status === true);
+      } else if (this.selected === "Pendientes")
+      {
+        return this.tasks.filter((task) => task.status === false);
+      }
+      return this.tasks;
+    },
+  },
+  methods: {
+    addTasks() {
+      // Crear y agregar tarea
+      const taskList = { name: this.nameTasks, status: false };
+      this.tasks.push(taskList);
+      this.nameTasks = ""; // Limpiar input
+      console.log(this.tasks);
+    },
+    deleteTasks(i) {
+      // Eliminar tarea por índice
+      this.tasks.splice(i, 1);
+    },
+    updateTasks(taskList, i) {
+      // Cambiar estado de la tarea
+      this.tasks[i].status = !taskList.status;
+    },
+    filterUpdates(status) {
+      // Cambiar filtro seleccionado
+      this.selected = status;
+    },
+  },
 };
 </script>
 
