@@ -242,11 +242,14 @@ export default {
 	methods: {
 		/**
 		 * Agrega una nueva tarea en estado pendiente.
-		 * Si el campo está vacío, no agrega nada.
+		 * Si el campo está vacío o solo contiene espacios, no agrega nada.
 		 * @returns {void}
 		 */
 		addTasks() {
-			const taskList = { name: this.nameTasks, status: false };
+			if (!this.nameTasks || !this.nameTasks.trim()) {
+				return;
+			}
+			const taskList = { name: this.nameTasks.trim(), status: false };
 			this.tasks.push(taskList);
 			this.nameTasks = '';
 		},
